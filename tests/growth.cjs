@@ -15,6 +15,7 @@ const {pathToFileURL}=require('node:url');
   assert.equal(await page.locator('details.credits').count(),1);
   assert.equal(await page.locator('details.credits').getAttribute('open'),null);
   assert.equal(await page.locator('details.credits a').getAttribute('href'),'https://onara-mp3.com/?lang=ja');
+  assert.equal(await page.locator('#level').evaluate(el=>el.parentElement.firstChild.textContent.trim()),'れんしゅうコース');
   assert.deepEqual(await page.locator('#level option').evaluateAll(options=>options.map(o=>[o.textContent,o.disabled])),[
    ['あいうえお',false],['ローマじ',false],['ことば',false],['ながい ことば',false],['ぶん',false]
   ]);
