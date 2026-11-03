@@ -34,7 +34,7 @@ const {pathToFileURL}=require('node:url');
     s.coins+=100;cooldown=0;care(i%3);
     const events=[];
     while($('celebration').open||document.querySelector('.page-evolution')){if(document.querySelector('.page-evolution')){events.push('evolution');document.querySelector('.page-evolution button').click()}else{events.push($('celebration').dataset.kind);$('skipEvent').click()}}
-    trace.push([stage(),parseFloat($('xpBar').style.width),events,$('adopt').hidden]);
+    trace.push([stage(),parseFloat($('xpBar').style.width),events,$('adopt').hidden,$('growthHint').textContent,$('careNotice').textContent]);
    }
    return trace;
   });
@@ -45,6 +45,8 @@ const {pathToFileURL}=require('node:url');
    assert(Math.abs(width-(care<4?(care-1)/3*100:care<12?(care-4)/8*100:100))<.001);
    assert.deepEqual(events,care===1?['evolution']:[4,12].includes(care)?['level','evolution']:[]);
   }
+  assert.equal(trace[11][4],'おとなの くらしを たのしもう！');
+  assert(!trace[11][5].includes('そだったよ'));
   await page.evaluate(()=>{
    s.family.maxLevel=5;
    playEventQueue(growthEvents(2,stage()));
