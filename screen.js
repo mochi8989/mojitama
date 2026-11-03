@@ -5,7 +5,7 @@
  const get=id=>document.getElementById(id),box=c=>Object.assign(document.createElement('div'),{className:c});
  const pet=box('companion'),tools=box('pet-tools'),identity=box('identity');
  identity.append(get('petName'),get('growth'));pet.append(get('scene'),identity);tools.append(get('basic'),get('careNotice'));
- const more=wrap.querySelector('details:not(.credits)');more.querySelector('summary').textContent='おとな向け・くわしいせってい';
+ const more=wrap.querySelector('details');more.querySelector('summary').textContent='おとな向け・くわしいせってい';
  get('closeSettings').onclick=()=>{more.open=false;get('card').focus({preventScroll:true})};
  const extra=box('extra-info');const stats=home.querySelector('.stats');stats.append(home.querySelector('.stat:has(#xp)'));stats.classList.add('live-stats');extra.append(get('wish'));
  more.append(extra);const actions=box('pet-links');actions.append(get('petBook'),get('petCamera'),home.querySelector('.family-actions'));
