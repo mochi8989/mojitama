@@ -12,8 +12,9 @@ const {pathToFileURL}=require('node:url');
   await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
   const ready=()=>page.waitForFunction(()=>document.querySelector('#petCamera').onclick);
   await ready();
-  assert.equal(await page.locator('details.credits').count(),1);
+  assert.equal(await page.locator('header details.credits').count(),1);
   assert.equal(await page.locator('details.credits').getAttribute('open'),null);
+  assert.equal(await page.locator('details.credits summary').innerText(),'クレジット');
   assert.equal(await page.locator('details.credits a').getAttribute('href'),'https://onara-mp3.com/?lang=ja');
   assert.equal(await page.locator('#level').evaluate(el=>el.parentElement.firstChild.textContent.trim()),'れんしゅうコース');
   assert.deepEqual(await page.locator('#level option').evaluateAll(options=>options.map(o=>[o.textContent,o.disabled])),[
