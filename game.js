@@ -153,7 +153,7 @@ function care(i){
   if(s.hatched&&!s.family.discovered.includes(s.petType))s.family.discovered.push(s.petType);
   save();update();
   const evo=stage()>old;
-  $('careNotice').textContent=['😋 おいしい！ ❤️','⭐ たのしい！ ♪','🫧 さっぱり！ ✨','✨ ぴかぴか！'][i]||(evo?'✨ '+stages[stage()]+'に そだったよ！':icon+' '+name+'、ありがとう！');
+  $('careNotice').textContent=['😋 おいしい！ ❤️','⭐ たのしい！ ♪','🫧 さっぱり！ ✨','✨ ぴかぴか！'][i]||(i===4&&evo?'🌟 キャンディを つかったよ！':icon+' '+name+'、ありがとう！');
   playReaction(i);tone([660,740,420,300][i]||660,.2);
   if(evo)playEventQueue(growthEvents(previousLevel,old));
 }
@@ -168,7 +168,7 @@ function updateGrowth(st){
  const current=st===0?s.family.petSolved:s.care;
  const left=Math.max(0,target-current);
  $('xp').textContent=s.care*10+' XP';
- $('growthHint').textContent=st===4?'おとなに そだったよ！':st===0?'ふかまで あと '+left+'もん':stages[st+1]+'まで おせわ あと '+left+'かい';
+  $('growthHint').textContent=st===4?'おとなの くらしを たのしもう！':st===0?'ふかまで あと '+left+'もん':stages[st+1]+'まで おせわ あと '+left+'かい';
  $('xpBar').style.width=(st===4?100:100*(current-lower)/(target-lower))+'%';
 }
 function update(){drawDailyLog();let st=stage();$('lastResult').hidden=!s.solved;$('resultCaption').textContent='🌟 せいかい '+s.solved+'もん ・ スコア '+s.score+'/1000 ・ ベスト '+s.best+'れんぞく';$('coins').textContent=s.coins;$('solved').textContent=s.solved+'　🏅 '+(s.solved%10||10)+'/10　'+s.score+'/1000';for(let k of ['hunger','mood','clean']){$(k+'Bar').style.width=s[k]+'%';$(k+'Num').textContent=s[k]}updateGrowth(st);$('growth').textContent=stages[st];$('petName').textContent=!s.hatched&&s.family.origin!=='starter'?'たまご':petArt.types[s.petType].name;drawCharacter(petFrame);$('level').replaceChildren(...['あいうえお','ローマじ','ことば','ながい ことば','ぶん'].map((n,i)=>{let o=new Option((i+1)+'　'+n+(i+1>unlocked()?' 🔒':''),i+1);o.disabled=i+1>unlocked();return o}));$('level').value=s.level;$('wish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！ おそうじしよう！':'うんちっちしちゃった！'):Object.keys(wishes).filter(k=>s[k]<=40).sort((a,b)=>s[a]-s[b]).map(k=>wishes[k])[0]||'きょうも いっしょに あそぼう！';buttons.forEach((b,i)=>{let [,,p]=items[i];b.classList.toggle('needed',i===3?s.poop:i<3&&s[Object.keys(items[i][3])[0]]<=40);b.disabled=!s.family.active;b.querySelector('small').textContent=i===3?'いつでも 0コイン':s.coins<p?'あと '+(p-s.coins)+' コイン':'おせわする'});$('petWish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！':'うんちっちしちゃった！'):s.hunger<=35?'おなかがすいたよ〜':s.mood<=35?'いっしょにあそぼ！':s.clean<=35?'おふろにはいりたい！':'';familyStatus()}
