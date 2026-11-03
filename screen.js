@@ -13,7 +13,7 @@
  get('petBook').textContent='📖 ずかん';get('petCamera').textContent='📸 ペット';
  get('recordCamera').textContent='📸 きろく';actions.append(get('lastResult'));
  get('level').parentElement.firstChild.textContent='れんしゅうコース ';get('letterCase').parentElement.firstChild.textContent='ローマじ ';
- const board=box('play-board');board.append(wrap.querySelector('header'),grid,more,wrap.querySelector('.credits'),get('status'));wrap.append(board);wrap.classList.add('single-home');
+ const board=box('play-board');board.append(wrap.querySelector('header'),grid,more,get('status'));wrap.append(board);wrap.classList.add('single-home');
  // Calculate the fit once per viewport change, never when game content changes.
  let fitFrame=0;
  function fit(){

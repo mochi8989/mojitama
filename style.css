@@ -184,6 +184,4 @@ details{background:white;padding:16px;border-radius:16px;margin-top:16px;line-he
 @media(max-height:480px) and (orientation:landscape){.single-home .hands{min-height:42px;padding:3px}.single-home .finger{height:30px;max-height:30px}.single-home .finger:nth-child(1),.single-home .finger:nth-child(5){height:23px;max-height:23px}.single-home .finger:nth-child(2),.single-home .finger:nth-child(4){height:27px;max-height:27px}.single-home .finger:nth-child(3){height:32px;max-height:32px}}
 .single-home #typingPanel>.progress{margin:0 0 7px;font-size:14px;text-align:left;background:#fff6db;border-radius:10px;padding:6px 9px}
 
-.credits{max-width:240px;margin:5px auto 0;padding:3px 8px;font-size:11px;line-height:1.5}
-.credits summary{font-size:11px;color:#788098}
-.credits p{margin:4px 0}
+.credits{margin:0;padding:0 4px;background:transparent;font-size:10px;line-height:1.35}.credits summary{font-size:10px;color:#788098;cursor:pointer}.credits p{margin:4px 0;white-space:nowrap}
