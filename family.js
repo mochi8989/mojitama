@@ -6,7 +6,7 @@ const Family=(()=>{
  function initial(saved){
    if([5,6].includes(saved?.version) && saved.family && Array.isArray(saved.family.album))return saved.family;
    return {active:id(),start:saved?'':date(),origin:'starter',petSolved:saved?.solved||0,
-     stored:[],album:[],purchases:[],claimed:[],discovered:saved?.hatched?[saved.petType||0]:[],maxLevel:1};
+     stored:[],album:[],purchases:[],claimed:[],discovered:saved?.hatched?[saved.petType||0]:[],maxLevel:5};
  }
  const fields=['petType','hatched','poop','care','hunger','mood','clean'];
  function snapshot(s){const f=s.family;return {id:f.active,start:f.start,origin:f.origin,solved:f.petSolved,...Object.fromEntries(fields.map(k=>[k,s[k]]))}}

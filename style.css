@@ -120,19 +120,14 @@ details{background:white;padding:16px;border-radius:16px;margin-top:16px;line-he
 #eventDetail{display:block;font-size:1.5rem}
 #skipEvent{margin-top:1rem}
 #eventStars{font-size:1.6rem;color:#a3528a}
-.eventMeter{display:none}
-[data-kind=level] .eventMeter{display:block;margin:.6rem auto;width:70%;height:8px;background:#dfd5ec;border-radius:4px;overflow:hidden}
-.eventMeter i{display:block;height:100%;background:#a76ede}
 @media(prefers-reduced-motion:no-preference){
  #celebration[open] #eventStars{animation:eventSpark .7s ease-in-out alternate infinite}
  #celebration[open] #eventPet{animation:eventHop .55s ease-in-out alternate infinite}
  #celebration[open][data-kind=evolution] #eventPet{animation:eventGlow .65s ease-out,eventHop .5s .65s ease-in-out alternate infinite}
- #celebration[open] .eventMeter i{animation:eventFill 1.2s ease-out}
 }
 @keyframes eventSpark{to{transform:translateY(-5px) scale(1.08)}}
 @keyframes eventHop{to{transform:translateY(-10px) rotate(4deg)}}
 @keyframes eventGlow{70%{filter:brightness(3) drop-shadow(0 0 6px gold)}}
-@keyframes eventFill{from{width:0}to{width:100%}}
 
 /* Keep the play surface steady between a prompt, its result and the next word. */
 .single-home #typingPanel .feedback,
@@ -168,12 +163,14 @@ details{background:white;padding:16px;border-radius:16px;margin-top:16px;line-he
 .single-home #pet[data-pose=idle],.single-home #pet[data-pose=blink],.single-home #pet[data-pose=look],.single-home #pet[data-pose=walk]{animation:none;transition:none}
 
 .page-evolution{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;background:#fff8e455;text-align:center;color:#513b70}
-.page-evolution h2{font-size:clamp(30px,7vw,66px);padding:10px 22px;border:4px solid #fff;border-radius:24px;background:#fff8e9eF;box-shadow:0 5px 0 #5d456a;color:#694999;margin:0;animation:evo-pop .55s ease-out}
+.page-evolution h2{font-size:clamp(30px,7vw,66px);padding:10px 22px;border:4px solid #fff;border-radius:24px;background:#fff8e9eF;box-shadow:0 5px 0 #5d456a;color:#694999;margin:0}
 .page-evolution strong{font-size:clamp(22px,4vw,38px);padding:5px 18px;border-radius:16px;background:#fff8e9eF}
-.page-evolution button{pointer-events:auto;font-weight:800;padding:8px 18px;border:2px solid #57456b;border-radius:12px;background:#fff}
+.evolution-flow-text span,.evolution-flow-detail span{display:inline-block;white-space:pre;opacity:0;animation:evo-letter-flow .65s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--flow-index)*.045s)}
+.evolution-flow-detail span{animation-delay:calc(.12s + var(--flow-index)*.03s)}
 .cracker-rain{position:absolute;inset:0;overflow:hidden;pointer-events:none}.cracker-rain span{position:absolute;top:-48px;font-size:clamp(22px,4vw,42px);animation:cracker-fall 2.1s linear infinite;filter:drop-shadow(1px 2px #fff)}
-@keyframes cracker-fall{to{transform:translateY(115vh) rotate(360deg)}}@keyframes evo-pop{from{transform:scale(.35);opacity:0}75%{transform:scale(1.08)}to{transform:scale(1);opacity:1}}
-@media(prefers-reduced-motion:reduce){.cracker-rain span{animation:none;top:15%}.page-evolution h2{animation:none}}
+@keyframes cracker-fall{to{transform:translateY(115vh) rotate(360deg)}}
+@keyframes evo-letter-flow{0%{opacity:0;transform:translate(-.4em,.45em) rotate(-10deg) scale(.7);filter:blur(3px)}55%{opacity:1;transform:translate(.06em,-.12em) rotate(3deg) scale(1.12);filter:blur(0)}100%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.cracker-rain span{animation:none;top:15%}.evolution-flow-text span,.evolution-flow-detail span{animation:none;opacity:1}}
 
 /* Make finger guidance large enough to see on compact single-screen layouts. */
 .single-home .hands{min-height:54px;gap:6px;padding:5px 3px}

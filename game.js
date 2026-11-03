@@ -47,11 +47,12 @@ s.family=Family.initial(loaded);
 if(s.hatched&&!s.family.discovered.includes(s.petType))s.family.discovered.push(s.petType);
 const stages=['たまご','あかちゃん','こども','せいちょう期','おとな'];
 const stage=()=>!s.hatched?0:s.care>=12?4:s.care>=4?3:s.care>=1?2:1;
-const unlocked=()=>Math.min(5,Math.max(s.family.maxLevel||1,1+[5,15,30,50].filter(n=>s.solved>=n).length,[1,2,2,3,4][stage()]));
-s.family.maxLevel=unlocked();
-s.level=Math.max(1,Math.min(unlocked(),s.level));
-const serialize=()=>JSON.stringify({...s,xp:s.care*10,stage:stage(),unlocked:unlocked()});
-function save(){try{s.family.maxLevel=unlocked();localStorage.setItem(KEY,serialize());return true}catch{$('status').textContent='このブラウザでは ほぞんできないよ';return false}}
+const courseCount=5;
+// Keep the legacy field at its maximum so older builds also retain all courses.
+s.family.maxLevel=courseCount;
+s.level=Math.max(1,Math.min(courseCount,s.level));
+const serialize=()=>JSON.stringify({...s,xp:s.care*10,stage:stage(),unlocked:courseCount});
+function save(){try{s.family.maxLevel=courseCount;localStorage.setItem(KEY,serialize());return true}catch{$('status').textContent='このブラウザでは ほぞんできないよ';return false}}
 const groups=['QAZ','WSX','EDC','RTFGVB',' ','','YUHJNM','IK,','OL.','P;/-'], names=['こゆび','くすりゆび','なかゆび','ひとさしゆび','おやゆび'];
 for(let i=0;i<10;i++){let f=document.createElement('span');f.className='finger';f.id='finger'+i;$(i<5?'leftHand':'rightHand').append(f)}
 for(let row of ['QWERTYUIOP-','ASDFGHJKL;','ZXCVBNM,./',' ']){let r=document.createElement('div');r.className='keyrow';for(let k of row){let b=document.createElement('button');b.className='key'+('ASDFJKL;'.includes(k)?' home':'')+(k===' '?' space':'');b.textContent=k===' '?'スペース':k;b.dataset.key=k;b.onclick=()=>press(k);r.append(b)}$('keyboard').append(r)}
@@ -103,7 +104,7 @@ function coinReward(rare){const base=[10,15,20,25,30][s.level-1]||10;return base
 function bonus(){return miss?0:(streak+1)%10===0?20:(streak+1)%5===0?10:0}
 function draw(){let word=typed+remaining,next=remaining[0];$('card').classList.toggle('long-prompt',q.difficulty===5||word.length>12||q.jp.length>8);$('jpword').textContent=q.jp;$('romaji').replaceChildren(...[...word].map((c,i)=>{let a=document.createElement('span');a.className=i<pos?'done':i===pos?'next':'';a.textContent=letter(c,i);return a}));document.querySelectorAll('.target').forEach(x=>x.classList.remove('target'));if(next){document.querySelector('[data-key="'+next+'"]').classList.add('target');let i=groups.findIndex(x=>x.includes(next));$('finger'+i).classList.add('target');$('guide').textContent='「'+letter(next,pos)+'」　'+(i<5?'ひだり':'みぎ')+'の '+names[i<5?i:9-i];$('reward').textContent='🪙 このもんだい ＋'+(coinReward(!!q.rare)+bonus())}else $('guide').textContent='できたね！'}
 function press(k){if(!on||pending||!remaining||$('celebration').open||celebrationBusy)return;k=k.toUpperCase();const suffix=Roman.guide(q.parts,typed+k);if(suffix===null){miss=true;streak=0;draw();let x=document.querySelector('.next');x.classList.add('wrong');clearTimeout(flash);flash=setTimeout(()=>x.classList.remove('wrong'),320);$('feedback').textContent='だいじょうぶ。きいろい キーを おそう！';tone(210);return}typed+=k;pos=typed.length;remaining=suffix;draw();if(!q.rare||remaining.length)typingSound();if(remaining.length){$('feedback').textContent='いいね！';return}
- const previousLevel=unlocked(), previousStage=stage();
+ const previousStage=stage();
  const rare=!!q.rare, gain=coinReward(rare)+bonus();
  streak=miss?0:streak+1;
  s.best=Math.max(s.best,streak);s.family.bestByLevel??={};s.family.bestByLevel[s.level]=Math.max(s.family.bestByLevel[s.level]||0,streak);
@@ -121,7 +122,7 @@ function press(k){if(!on||pending||!remaining||$('celebration').open||celebratio
  save();
  update();
  $('feedback').textContent=(rare?'だいあたり！ ＋':'せいかい！ ＋')+gain+' コイン'+(streak===10?'　パーフェクト！':streak>0&&streak%5===0?'　すごい！':'');if(streak===5||streak===10)tone(streak===10?1046:784,.3,0,'triangle',streak===10?1568:1175,.8);if(s.solved%10===0){$('feedback').textContent+='　🏅 きんメダル！';tone(1318,.35,.1,'triangle',1760,.9);s.family.medals??=[];const medal='ステージ '+Math.ceil(s.solved/10)+' の きんメダル';if(!s.family.medals.includes(medal))s.family.medals.push(medal)}
- const events=growthEvents(previousLevel,previousStage);
+ const events=growthEvents(previousStage);
  if(rare)events.push(['jackpot',gain,gain]);
  else if(!events.length)victorySound(streak,false);
  memeRain(q);
@@ -144,7 +145,7 @@ function care(i){
     card.classList.remove('invite');void card.offsetWidth;card.classList.add('invite');return;
   }
   cooldown=performance.now()+650;
-  const old=stage(),previousLevel=unlocked();recordPlay('care');s.lastCareAt=Date.now();s.coins-=price;if(i!==3){s.care++;if(i===0)s.hatched||=s.family.petSolved>=5}if(i===3)s.poop=false;
+  const old=stage();recordPlay('care');s.lastCareAt=Date.now();s.coins-=price;if(i!==3){s.care++;if(i===0)s.hatched||=s.family.petSolved>=5}if(i===3)s.poop=false;
   for(const [key,value] of Object.entries(effects)){
     const amount=Math.min(100-s[key],value);s[key]+=amount;
     const number=$(key+'Num');number.dataset.gain='+'+amount;
@@ -155,7 +156,7 @@ function care(i){
   const evo=stage()>old;
   $('careNotice').textContent=['😋 おいしい！ ❤️','⭐ たのしい！ ♪','🫧 さっぱり！ ✨','✨ ぴかぴか！'][i]||(i===4&&evo?'🌟 キャンディを つかったよ！':icon+' '+name+'、ありがとう！');
   playReaction(i);tone([660,740,420,300][i]||660,.2);
-  if(evo)playEventQueue(growthEvents(previousLevel,old));
+  if(evo)playEventQueue(growthEvents(old));
 }
 for(const i of items.keys()){
   const [icon,name,price,effects]=items[i],b=document.createElement('button');
@@ -171,7 +172,7 @@ function updateGrowth(st){
   $('growthHint').textContent=st===4?'おとなの くらしを たのしもう！':st===0?'ふかまで あと '+left+'もん':stages[st+1]+'まで おせわ あと '+left+'かい';
  $('xpBar').style.width=(st===4?100:100*(current-lower)/(target-lower))+'%';
 }
-function update(){drawDailyLog();let st=stage();$('lastResult').hidden=!s.solved;$('resultCaption').textContent='🌟 せいかい '+s.solved+'もん ・ スコア '+s.score+'/1000 ・ ベスト '+s.best+'れんぞく';$('coins').textContent=s.coins;$('solved').textContent=s.solved+'　🏅 '+(s.solved%10||10)+'/10　'+s.score+'/1000';for(let k of ['hunger','mood','clean']){$(k+'Bar').style.width=s[k]+'%';$(k+'Num').textContent=s[k]}updateGrowth(st);$('growth').textContent=stages[st];$('petName').textContent=!s.hatched&&s.family.origin!=='starter'?'たまご':petArt.types[s.petType].name;drawCharacter(petFrame);$('level').replaceChildren(...['あいうえお','ローマじ','ことば','ながい ことば','ぶん'].map((n,i)=>{let o=new Option((i+1)+'　'+n+(i+1>unlocked()?' 🔒':''),i+1);o.disabled=i+1>unlocked();return o}));$('level').value=s.level;$('wish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！ おそうじしよう！':'うんちっちしちゃった！'):Object.keys(wishes).filter(k=>s[k]<=40).sort((a,b)=>s[a]-s[b]).map(k=>wishes[k])[0]||'きょうも いっしょに あそぼう！';buttons.forEach((b,i)=>{let [,,p]=items[i];b.classList.toggle('needed',i===3?s.poop:i<3&&s[Object.keys(items[i][3])[0]]<=40);b.disabled=!s.family.active;b.querySelector('small').textContent=i===3?'いつでも 0コイン':s.coins<p?'あと '+(p-s.coins)+' コイン':'おせわする'});$('petWish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！':'うんちっちしちゃった！'):s.hunger<=35?'おなかがすいたよ〜':s.mood<=35?'いっしょにあそぼ！':s.clean<=35?'おふろにはいりたい！':'';familyStatus()}
+function update(){drawDailyLog();let st=stage();$('lastResult').hidden=!s.solved;$('resultCaption').textContent='🌟 せいかい '+s.solved+'もん ・ スコア '+s.score+'/1000 ・ ベスト '+s.best+'れんぞく';$('coins').textContent=s.coins;$('solved').textContent=s.solved+'　🏅 '+(s.solved%10||10)+'/10　'+s.score+'/1000';for(let k of ['hunger','mood','clean']){$(k+'Bar').style.width=s[k]+'%';$(k+'Num').textContent=s[k]}updateGrowth(st);$('growth').textContent=stages[st];$('petName').textContent=!s.hatched&&s.family.origin!=='starter'?'たまご':petArt.types[s.petType].name;drawCharacter(petFrame);$('level').replaceChildren(...['あいうえお','ローマじ','ことば','ながい ことば','ぶん'].map((n,i)=>new Option(n,i+1)));$('level').value=s.level;$('wish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！ おそうじしよう！':'うんちっちしちゃった！'):Object.keys(wishes).filter(k=>s[k]<=40).sort((a,b)=>s[a]-s[b]).map(k=>wishes[k])[0]||'きょうも いっしょに あそぼう！';buttons.forEach((b,i)=>{let [,,p]=items[i];b.classList.toggle('needed',i===3?s.poop:i<3&&s[Object.keys(items[i][3])[0]]<=40);b.disabled=!s.family.active;b.querySelector('small').textContent=i===3?'いつでも 0コイン':s.coins<p?'あと '+(p-s.coins)+' コイン':'おせわする'});$('petWish').textContent=s.poop?(Date.now()-s.lastCareAt>=3*86400000?'うんちっちで たいへん！':'うんちっちしちゃった！'):s.hunger<=35?'おなかがすいたよ〜':s.mood<=35?'いっしょにあそぼ！':s.clean<=35?'おふろにはいりたい！':'';familyStatus()}
 $('level').onchange=e=>{s.level=+e.target.value;save();pick();e.target.blur();if($('card').getBoundingClientRect().top<0)$('card').scrollIntoView({block:'start'})};$('mute').checked=s.muted;$('mute').onchange=e=>{s.muted=e.target.checked;puffSound.muted=s.muted;save();playBgm()};$('vol').value=s.bgmVolume;$('vol').oninput=e=>{s.bgmVolume=+e.target.value;save();playBgm()};$('sfxVol').value=s.sfxVolume;$('sfxVol').oninput=e=>{s.sfxVolume=+e.target.value;save();tone(520)};$('bgm').value=s.bgm;$('bgm').onchange=e=>{s.bgm=e.target.value;save();playBgm()};initFamily();update();drawCharacter(0);pick();
 
 let bgmTimer=0,bgmStep=0;const tunes={pico:[523,659,784,659],nyan:[659,784,880,784],slow:[392,523,440,349],fast:[784,988,1175,988],sleep:[330,392,330,262]};function playBgm(){clearInterval(bgmTimer);if(s.muted||!s.bgmVolume||s.bgm==='off')return;const notes=tunes[s.bgm];bgmTimer=setInterval(()=>{if(!s.muted&&s.bgmVolume)tone(notes[bgmStep++%notes.length],.16,0,'sine',notes[bgmStep%notes.length],.3,'bgm')},s.bgm==='fast'?220:520)}
